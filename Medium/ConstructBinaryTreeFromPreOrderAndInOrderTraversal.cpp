@@ -13,29 +13,33 @@ struct TreeNode {
 
 
 class Solution {
-public:
-    TreeNode* buildTree(vector<int>& preorder, vector<int>& inorder) {
-        if (preorder.empty() || inorder.empty()) return nullptr; 
-        
-        TreeNode* root = new TreeNode(preorder[0]);
-        int idx = 0; 
+private:
+    TreeNode* helper(vector<int>& preorder, vector<int>& inorder, int preStart, int preEnd, int inStart, int inEnd) { 
+        if (preStart > preEnd || inStart > inEnd) { 
+            return nullptr; 
+        }
 
-        for (int i = 0; i<inorder.size(); i++) { 
-            if(root->val == inorder[i]) { 
-                idx = i; 
-                break; 
+        TreeNode* root = new TreeNode(preorder[preStart]); 
+        int posOfRoot; 
+
+        for(int i = inStart; i <= inEnd; i++) { 
+            if(inorder[i] == root->val) { 
+                posOfRoot = i; 
+                break;
             }
         }
 
-        vector<int> left_inorder(inorder.begin(), inorder.begin() + idx);
-        vector<int> right_inorder(inorder.begin() + idx + 1, inorder.end());
+        int numsLeft = posOfRoot - inStart;
 
-        vector<int> left_preorder(preorder.begin() + 1, preorder.begin() + 1 + left_inorder.size());
-        vector<int> right_preorder(preorder.begin() + 1 + left_inorder.size(), preorder.end());
+        root->left = helper(preorder, inorder, preStart + 1, preStart + numsLeft, inStart, posOfRoot - 1);
+        root->right = helper(preorder, inorder, preStart + numsLeft + 1, preEnd, posOfRoot + 1, inEnd);
 
-        root->left = buildTree(left_preorder, left_inorder);
-        root->right = buildTree(right_preorder, right_inorder);
+        return root; 
+    }
 
-        return root;  
+public:
+    TreeNode* buildTree(vector<int>& preorder, vector<int>& inorder) {
+        int n = preorder.size()-1;
+        return helper(preorder, inorder, 0, n, 0, n); 
     }
 };
