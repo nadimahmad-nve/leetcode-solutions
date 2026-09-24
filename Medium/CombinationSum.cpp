@@ -3,32 +3,38 @@
 using namespace std; 
 
 class Solution {
-public:
-    vector<vector<int>> combinationSum(vector<int>& candidates, int target) {
-        vector<vector<int>> result; 
-        vector<int> current; 
-
-        backtrack(candidates, 0, current, result, target);
-
-        return result; 
-    }
-
 private:
-    void backtrack(vector<int>& candidates, int index, vector<int>& current, vector<vector<int>>& result, int target) { 
-        if (target == 0) { 
-            result.push_back(current); 
+    vector<vector<int>> res; 
+
+    void backtrack(int currSum, vector<int>& currNums, int target, vector<int>& candidates, int start) { 
+        if (currSum > target || start >= candidates.size()) { 
+            // Invalid solution
             return; 
         }
-
-        if (target < 0 || index == candidates.size()) { 
-            return;
+        
+        if (currSum == target) { 
+            res.push_back(currNums);
+            return;  
         }
 
-        current.push_back(candidates[index]); 
-        backtrack(candidates, index, current, result, target-candidates[index]); 
+        for (int i=start; i<candidates.size(); i++) { 
+            currNums.push_back(candidates[i]); 
 
-        current.pop_back();
+            currSum += candidates[i]; 
+            backtrack(currSum, currNums, target, candidates, i);
 
-        backtrack(candidates, index+1, current, result, target); 
+            currSum -= candidates[i]; 
+            currNums.pop_back();
+        }
+    }
+
+
+
+public:
+    vector<vector<int>> combinationSum(vector<int>& candidates, int target) {
+        vector<int> currNums; 
+        backtrack(0, currNums, target, candidates, 0); 
+
+        return res; 
     }
 };
