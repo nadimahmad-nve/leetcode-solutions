@@ -4,44 +4,48 @@ using namespace std;
 
 class Solution {
 private: 
-    void dfs(vector<vector<char>>& grid, int r, int c) { 
-        int rows = grid.size(); 
-        int cols = grid[0].size(); 
+    void dfs(int i, int j, vector<vector<char>>& grid) { 
+        int rows = grid.size();
+        int cols = grid[0].size();
 
-        if (r < 0 || c < 0 || r >= rows || c >= cols) { 
-            return;
+        if (i < 0 || j < 0 || i >= rows || j >= cols) { 
+            return; 
         }
 
-        if (grid[r][c] == '0') return; 
+        if (grid[i][j] == '0') {
+            // Water
+            return; 
+        }
 
-        grid[r][c] = '0'; 
+        // We have found land. Flood it 
+        grid[i][j] = '0'; 
 
         int dx[4] = {1, -1, 0, 0}; 
         int dy[4] = {0, 0, 1, -1}; 
 
         for (int k=0; k<4; k++) { 
-            int new_x = r + dx[k];
-            int new_y = c + dy[k];
+            int new_i = i + dx[k]; 
+            int new_j = j + dy[k]; 
 
-            dfs(grid, new_x, new_y);
+            dfs(new_i, new_j, grid); 
         }
     }
 
 public:
     int numIslands(vector<vector<char>>& grid) {
-        int m = grid.size(); 
+        int m = grid.size();
         int n = grid[0].size();
 
-        int count = 0;
+        int count = 0; 
 
-        for(int i=0; i<m; i++) { 
-            for(int j=0; j<n; j++) {
-                if (grid[i][j] == '1') {
+        for (int i=0; i<m; i++) { 
+            for (int j=0; j<n; j++) { 
+                if(grid[i][j] == '1') {
                     count++; 
-                    dfs(grid, i, j);
+                    dfs(i, j, grid); 
                 }
             }
-        } 
+        }   
 
         return count; 
     }
