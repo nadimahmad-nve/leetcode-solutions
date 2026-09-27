@@ -1,44 +1,48 @@
 #include <vector>
+#include <unordered_map>
 
-using namespace std;
+using namespace std; 
 
 class Solution {
 private:
-    bool hasCycle(int course, vector<vector<int>>& adj, vector<int>& visited) { 
-        if (visited[course] == 1) return true; 
-
-        if(visited[course] == 2) return false; 
-
-        visited[course] = 1;
-
-        for (int neighbor : adj[course]) { 
-            if (hasCycle(neighbor, adj, visited)) {
-                return true; 
-            }
+    bool dfs(int course, unordered_map<int, vector<int>>& adj, vector<int>& states) {
+        if(states[course] == 1) { 
+            return false; 
         }
 
-        visited[course] = 2; 
+        if(states[course] == 2) { 
+            return true; 
+        }
 
-        return false; 
-    }
+        states[course] = 1;
+
+        for(int i=0; i<adj[course].size(); i++) { 
+            if (!dfs(adj[course][i], adj, states)) {
+                return false;
+            } 
+        }
+
+        states[course] = 2; 
+        return true;
+    } 
+
+
 public:
     bool canFinish(int numCourses, vector<vector<int>>& prerequisites) {
-        vector<vector<int>> adj(numCourses); 
-        
-        for (const auto& pair: prerequisites) { 
-            int course = pair[0]; 
-            int prereq = pair[1];
+        unordered_map<int, vector<int>> adj; 
+        vector<int> states(numCourses, 0);
+        // Build adjacency list 
 
-            adj[prereq].push_back(course);
+        for(int i=0; i<prerequisites.size(); i++) { 
+            vector<int> curr = prerequisites[i]; 
+            adj[curr[1]].push_back(curr[0]); 
         }
 
-        vector<int> visited(numCourses, 0); 
-
-        for (int i=0; i<numCourses; i++) { 
-            if (visited[i] == 0) { 
-                if (hasCycle(i, adj, visited)) { 
-                    return false; 
-                }
+        for (int i = 0; i < numCourses; i++) {
+            if (states[i] == 0) {
+                if (!dfs(i, adj, states)) {
+                    return false; // A cycle was found somewhere in this branch
+                }    
             }
         }
 
