@@ -7,3 +7,4 @@ This repository is to showcase my LeetCode solutions for various problems, separ
 ├── Easy 
 ├── Medium 
 └── Hard
+└── PythonSolutions
